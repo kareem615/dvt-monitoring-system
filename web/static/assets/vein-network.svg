@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+  <title id="title">DVT background vessel network</title>
+  <desc id="desc">Stylized medical vessel network for the DVT monitoring dashboard</desc>
+  <rect width="720" height="420" fill="#f7fafc"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="#0f766e" stroke-width="18" d="M68 336c93-42 121-118 196-139 85-24 124 56 208 19 70-30 90-107 179-137"/>
+    <path stroke="#5eead4" stroke-width="8" d="M68 336c93-42 121-118 196-139 85-24 124 56 208 19 70-30 90-107 179-137"/>
+    <path stroke="#dc2626" stroke-width="14" d="M269 196c-13 32-15 57-5 76"/>
+    <path stroke="#fecaca" stroke-width="6" d="M269 196c-13 32-15 57-5 76"/>
+    <path stroke="#0f4c81" stroke-width="10" d="M260 198c-14-53-3-83 32-121"/>
+    <path stroke="#38bdf8" stroke-width="4" d="M260 198c-14-53-3-83 32-121"/>
+    <path stroke="#0f4c81" stroke-width="10" d="M470 216c45 27 93 31 147 11"/>
+    <path stroke="#38bdf8" stroke-width="4" d="M470 216c45 27 93 31 147 11"/>
+    <path stroke="#0f766e" stroke-width="10" d="M399 223c22 48 53 81 93 100"/>
+    <path stroke="#5eead4" stroke-width="4" d="M399 223c22 48 53 81 93 100"/>
+  </g>
+  <circle cx="268" cy="213" r="31" fill="#dc2626" opacity=".14"/>
+  <circle cx="268" cy="213" r="18" fill="#dc2626" opacity=".28"/>
+</svg>

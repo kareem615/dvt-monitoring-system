@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DVT Guard AI Monitoring</title>
+    <link rel="icon" href="/static/assets/dvt-logo.svg" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <section id="loginView" class="login-view">
+      <div class="login-panel">
+        <img class="brand-mark" src="/static/assets/dvt-logo.svg" alt="DVT Guard logo" />
+        <h1>DVT Guard AI</h1>
+        <p>Clinical monitoring dashboard for sensor-driven DVT risk detection.</p>
+        <form id="loginForm" class="stacked-form">
+          <label>
+            Email
+            <input id="loginEmail" type="email" autocomplete="email" required />
+          </label>
+          <label>
+            Password
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button type="submit">Sign in</button>
+          <span id="loginError" class="form-message"></span>
+        </form>
+      </div>
+      <div class="login-art" aria-hidden="true"></div>
+    </section>
+
+    <main id="appView" class="app-view hidden">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <img src="/static/assets/dvt-logo.svg" alt="DVT Guard logo" />
+          <div>
+            <strong>DVT Guard AI</strong>
+            <span id="roleBadge">Doctor</span>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="section-title">Patients</div>
+          <div id="patientList" class="patient-list"></div>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <span class="eyebrow">Live Clinical Dashboard</span>
+            <h2 id="patientTitle">Select a patient</h2>
+          </div>
+          <div class="topbar-actions">
+            <span id="connectionBadge" class="status-pill neutral">Connecting</span>
+            <button id="signOutButton" class="ghost-button" type="button">Sign out</button>
+          </div>
+        </header>
+
+        <section id="emptyState" class="empty-state">
+          <img src="/static/assets/vein-network.svg" alt="" />
+          <h3>No patient selected</h3>
+          <p>Select a patient from the left panel to view readings, prediction status, alarm state, and history.</p>
+        </section>
+
+        <section id="dashboardView" class="dashboard-grid hidden">
+          <div class="summary-band">
+            <div>
+              <span>Patient ID</span>
+              <strong id="patientIdText">-</strong>
+            </div>
+            <div>
+              <span>Device ID</span>
+              <strong id="deviceIdText">-</strong>
+            </div>
+            <div>
+              <span>Last Update</span>
+              <strong id="lastUpdateText">-</strong>
+            </div>
+            <div>
+              <span>Alarm</span>
+              <strong id="alarmText">Inactive</strong>
+            </div>
+          </div>
+
+          <article class="clinical-status" id="clinicalStatusPanel">
+            <div>
+              <span class="eyebrow">Model Prediction</span>
+              <h3 id="predictionStatus">Waiting</h3>
+              <p id="predictionSubtext">The Random Forest model will update when sensor readings arrive.</p>
+            </div>
+            <div class="timer-dial">
+              <span id="timerValue">0s</span>
+              <small>DVT timer</small>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <span>EMG Signal</span>
+            <strong id="emgValue">-</strong>
+            <small>Processed RMS from ESP32</small>
+          </article>
+          <article class="metric-card">
+            <span>Temperature</span>
+            <strong id="tempValue">-</strong>
+            <small>Skin temperature sensor</small>
+          </article>
+          <article class="metric-card">
+            <span>Motion Value</span>
+            <strong id="motionValue">-</strong>
+            <small>MPU motion level</small>
+          </article>
+          <article class="metric-card">
+            <span>Confidence</span>
+            <strong id="confidenceValue">-</strong>
+            <small>Predicted class probability</small>
+          </article>
+
+          <article class="details-panel">
+            <div class="panel-header">
+              <h3>Medical History</h3>
+              <span id="patientMetaText">-</span>
+            </div>
+            <p id="medicalHistoryText">No medical history has been added yet.</p>
+          </article>
+
+          <article class="details-panel history-panel">
+            <div class="panel-header">
+              <h3>Historical Records</h3>
+              <span>Latest 50 readings</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>EMG</th>
+                    <th>Temp</th>
+                    <th>Motion</th>
+                    <th>Status</th>
+                    <th>Alarm</th>
+                  </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article id="adminPanel" class="admin-panel hidden">
+            <div class="panel-header">
+              <h3>Administration</h3>
+              <span>Create and link doctors, patients, and ESP32 devices.</span>
+            </div>
+            <div class="admin-grid">
+              <form id="doctorForm" class="stacked-form compact">
+                <h4>Add Doctor</h4>
+                <input name="name" placeholder="Doctor name" required />
+                <input name="email" type="email" placeholder="Doctor email" required />
+                <input name="password" type="password" placeholder="Temporary password" required />
+                <button type="submit">Create doctor</button>
+              </form>
+
+              <form id="patientForm" class="stacked-form compact">
+                <h4>Add or Update Patient</h4>
+                <input name="patientId" placeholder="patient_001" required />
+                <input name="name" placeholder="Patient name" required />
+                <div class="two-cols">
+                  <input name="age" placeholder="Age" />
+                  <input name="gender" placeholder="Gender" />
+                </div>
+                <textarea name="medicalHistory" placeholder="Medical history"></textarea>
+                <textarea name="notes" placeholder="Doctor notes"></textarea>
+                <button type="submit">Save patient</button>
+              </form>
+
+              <form id="deviceForm" class="stacked-form compact">
+                <h4>Add ESP32 Device</h4>
+                <input name="deviceId" placeholder="device_001" required />
+                <input name="label" placeholder="Left leg ESP32" />
+                <input name="deviceEmail" type="email" placeholder="device_001@dvt.local" />
+                <input name="devicePassword" type="password" placeholder="Device password" />
+                <select name="patientId" id="devicePatientSelect">
+                  <option value="">No patient yet</option>
+                </select>
+                <button type="submit">Create device</button>
+              </form>
+
+              <form id="linkDoctorForm" class="stacked-form compact">
+                <h4>Link Doctor to Patient</h4>
+                <select name="doctorUid" id="doctorSelect" required></select>
+                <select name="patientId" id="doctorPatientSelect" required></select>
+                <button type="submit">Link doctor</button>
+              </form>
+
+              <form id="linkDeviceForm" class="stacked-form compact">
+                <h4>Link Device to Patient</h4>
+                <select name="deviceId" id="deviceSelect" required></select>
+                <select name="patientId" id="patientDeviceSelect" required></select>
+                <button type="submit">Link device</button>
+              </form>
+            </div>
+            <p id="adminMessage" class="form-message"></p>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="/static/js/app.js"></script>
+  </body>
+</html>

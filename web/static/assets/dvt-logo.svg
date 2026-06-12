@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">DVT Guard logo</title>
+  <desc id="desc">Shield with vein and pulse mark</desc>
+  <defs>
+    <linearGradient id="shield" x1="18" x2="140" y1="12" y2="148" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f766e"/>
+      <stop offset=".58" stop-color="#0f4c81"/>
+      <stop offset="1" stop-color="#b91c1c"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#shield)" d="M80 10 132 28v43c0 38-22 65-52 79-30-14-52-41-52-79V28L80 10Z"/>
+  <path fill="#fff" d="M80 30c21 0 38 17 38 38 0 28-26 47-38 56-12-9-38-28-38-56 0-21 17-38 38-38Z" opacity=".94"/>
+  <path fill="none" stroke="#0f766e" stroke-linecap="round" stroke-width="8" d="M80 48c-10 13-8 25 0 36s10 22 0 35"/>
+  <path fill="none" stroke="#dc2626" stroke-linecap="round" stroke-linejoin="round" stroke-width="7" d="M47 81h18l8-14 13 28 9-18h18"/>
+  <circle cx="80" cy="84" r="8" fill="#dc2626"/>
+</svg>

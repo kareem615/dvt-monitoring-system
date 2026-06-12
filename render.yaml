@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: dvt-monitoring-system
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server.app:app --workers 1 --threads 4 --timeout 120
+    envVars:
+      - key: FIREBASE_DATABASE_URL
+        value: https://dvt-monitoring-system-default-rtdb.firebaseio.com
+      - key: DVT_PERSISTENCE_SECONDS
+        value: "10"

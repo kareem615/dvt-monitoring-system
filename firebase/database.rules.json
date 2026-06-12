@@ -1,0 +1,110 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "admins": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": false
+      }
+    },
+
+    "doctors": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": false
+      }
+    },
+
+    "patients": {
+      "$patientId": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('doctorPatients').child(auth.uid).child($patientId).val() === true)",
+        ".write": false
+      }
+    },
+
+    "doctorPatients": {
+      "$doctorUid": {
+        ".read": "auth != null && (auth.uid === $doctorUid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": false
+      }
+    },
+
+    "patientDoctors": {
+      "$patientId": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('doctorPatients').child(auth.uid).child($patientId).val() === true)",
+        ".write": false
+      }
+    },
+
+    "patientDevices": {
+      "$patientId": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('doctorPatients').child(auth.uid).child($patientId).val() === true)",
+        ".write": false
+      }
+    },
+
+    "deviceAuth": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": false
+      }
+    },
+
+    "devices": {
+      "$deviceId": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId || (data.child('patientId').exists() && root.child('doctorPatients').child(auth.uid).child(data.child('patientId').val()).val() === true))",
+        ".write": false,
+
+        "sensors": {
+          ".write": "auth != null && root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId",
+          ".validate": "newData.hasChildren(['EMG_Signal', 'Temperature', 'Motion_Value', 'Timestamp']) && newData.child('EMG_Signal').isNumber() && newData.child('Temperature').isNumber() && newData.child('Motion_Value').isNumber() && newData.child('Timestamp').isString()"
+        },
+
+        "state": {
+          ".write": "auth != null && root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId"
+        },
+
+        "alarm": {
+          ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId || (root.child('devices').child($deviceId).child('patientId').exists() && root.child('doctorPatients').child(auth.uid).child(root.child('devices').child($deviceId).child('patientId').val()).val() === true))",
+          ".write": "auth != null && root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId && newData.child('Active').val() === false",
+
+          "Active": {
+            ".write": "auth != null && root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId && newData.val() === false"
+          },
+          "AcknowledgedAt": {
+            ".write": "auth != null && root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId"
+          },
+          "AcknowledgedAtMs": {
+            ".write": "auth != null && root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId && newData.isNumber()"
+          },
+          "AcknowledgedByDevice": {
+            ".write": "auth != null && root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId && newData.val() === $deviceId"
+          }
+        }
+      }
+    },
+
+    "logs": {
+      "$patientId": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('doctorPatients').child(auth.uid).child($patientId).val() === true)",
+        ".write": false
+      }
+    },
+
+    "deviceLogs": {
+      "$deviceId": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('deviceAuth').child(auth.uid).child('deviceId').val() === $deviceId || (root.child('devices').child($deviceId).child('patientId').exists() && root.child('doctorPatients').child(auth.uid).child(root.child('devices').child($deviceId).child('patientId').val()).val() === true))",
+        ".write": false
+      }
+    },
+
+    "notifications": {
+      "$patientId": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || root.child('doctorPatients').child(auth.uid).child($patientId).val() === true)",
+        ".write": false
+      }
+    }
+  }
+}

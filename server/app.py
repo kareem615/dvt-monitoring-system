@@ -439,23 +439,63 @@ def send_alarm_notifications(patient_id: str | None, device_id: str, sensors: di
                 "for more than 10 seconds. Immediate medical review is recommended."
             ),
         }
-        body = f"""
-Potential Deep Vein Thrombosis detected.
+        body = body = f"""
+🚨 DVT GUARD ALERT 🚨
 
-Patient: {patient.get('name', 'Unknown')}
-Patient ID: {patient_id}
+━━━━━━━━━━━━━━━━━━
 
-Device ID: {device_id}
+👤 Patient Name:
+{patient.get('name', 'Unknown')}
 
-EMG Signal: {sensors['EMG_Signal']}
-Temperature: {sensors['Temperature']}
-Motion Value: {sensors['Motion_Value']}
+🆔 Patient ID:
+{patient_id}
 
-Confidence: {prediction.get('Confidence')}%
+📟 Device ID:
+{device_id}
 
-The DVT condition persisted for more than {timer} seconds.
+━━━━━━━━━━━━━━━━━━
+
+📊 SENSOR READINGS
+
+⚡ EMG Signal:
+{sensors['EMG_Signal']}
+
+🌡 Temperature:
+{sensors['Temperature']} °C
+
+🏃 Motion Value:
+{sensors['Motion_Value']}
+
+━━━━━━━━━━━━━━━━━━
+
+🧠 AI PREDICTION
+
+Risk Status:
+DVT Risk Detected
+
+Confidence:
+{prediction.get('Confidence')} %
+
+⏱ Persistence Time:
+{timer} seconds
+
+━━━━━━━━━━━━━━━━━━
+
+🕒 Detection Time:
+{sensors.get('Timestamp') or utc_iso()}
+
+━━━━━━━━━━━━━━━━━━
+
+⚠ RECOMMENDATION
 
 Immediate medical review is recommended.
+
+Please assess the patient for possible
+Deep Vein Thrombosis (DVT).
+
+━━━━━━━━━━━━━━━━━━
+
+DVT Guard AI Monitoring System
 """
 
         result = send_telegram(body)

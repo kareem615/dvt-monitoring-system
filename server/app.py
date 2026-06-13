@@ -151,9 +151,7 @@ def send_emailjs(template_params: dict) -> dict:
         "template_params": template_params,
     }
 
-    private_key = os.environ.get("EMAILJS_PRIVATE_KEY")
-    if private_key:
-        payload["private_key"] = private_key
+    # private key disabled for testing
 
     logger.info("Sending EmailJS request")
 

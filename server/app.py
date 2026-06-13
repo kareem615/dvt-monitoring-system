@@ -129,7 +129,41 @@ def load_model():
     logger.info("Random Forest model loaded from %s", MODEL_PATH)
     return _model
 
+def send_gmail(to_email, subject, body):
+    try:
+        msg = MIMEMultipart()
 
+        msg["From"] = os.environ["GMAIL_EMAIL"]
+        msg["To"] = to_email
+        msg["Subject"] = subject
+
+        msg.attach(MIMEText(body, "plain"))
+
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+
+        server.login(
+            os.environ["GMAIL_EMAIL"],
+            os.environ["GMAIL_APP_PASSWORD"]
+        )
+
+        server.send_message(msg)
+        server.quit()
+
+        logger.info("GMAIL EMAIL SENT SUCCESSFULLY")
+
+        return {
+            "sent": True
+        }
+
+    except Exception as e:
+        logger.exception("GMAIL SEND FAILED")
+
+        return {
+            "sent": False,
+            "reason": str(e)
+        }
+    
 def emailjs_configured() -> bool:
     return all(
         os.environ.get(name)
@@ -139,6 +173,7 @@ def emailjs_configured() -> bool:
 
 def send_emailjs(template_params: dict) -> dict:
     if not emailjs_configured():
+        
         logger.info("EmailJS NOT configured")
         return {"sent": False, "reason": "EmailJS is not configured"}
 
@@ -377,7 +412,30 @@ def send_alarm_notifications(patient_id: str | None, device_id: str, sensors: di
                 "for more than 10 seconds. Immediate medical review is recommended."
             ),
         }
-        result = send_emailjs(params)
+        body = f"""
+Potential Deep Vein Thrombosis detected.
+
+Patient: {patient.get('name', 'Unknown')}
+Patient ID: {patient_id}
+
+Device ID: {device_id}
+
+EMG Signal: {sensors['EMG_Signal']}
+Temperature: {sensors['Temperature']}
+Motion Value: {sensors['Motion_Value']}
+
+Confidence: {prediction.get('Confidence')}%
+
+The DVT condition persisted for more than {timer} seconds.
+
+Immediate medical review is recommended.
+"""
+
+        result = send_gmail(
+            doctor.get("email"),
+            "DVT Risk Alert",
+            body
+        )
         results.append({"doctorEmail": doctor.get("email"), **result})
 
     write_notification(

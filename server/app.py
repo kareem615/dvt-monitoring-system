@@ -9,6 +9,9 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib import error, request as urlrequest
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 import firebase_admin
 import joblib

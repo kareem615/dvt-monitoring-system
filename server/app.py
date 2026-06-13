@@ -136,7 +136,13 @@ def emailjs_configured() -> bool:
 
 def send_emailjs(template_params: dict) -> dict:
     if not emailjs_configured():
+        logger.info("EmailJS NOT configured")
         return {"sent": False, "reason": "EmailJS is not configured"}
+
+    logger.info("EMAILJS_SERVICE_ID=%s", os.environ.get("EMAILJS_SERVICE_ID"))
+    logger.info("EMAILJS_TEMPLATE_ID=%s", os.environ.get("EMAILJS_TEMPLATE_ID"))
+    logger.info("EMAILJS_PUBLIC_KEY=%s", os.environ.get("EMAILJS_PUBLIC_KEY"))
+    logger.info("EMAILJS_PRIVATE_KEY_EXISTS=%s", bool(os.environ.get("EMAILJS_PRIVATE_KEY")))
 
     payload = {
         "service_id": os.environ["EMAILJS_SERVICE_ID"],
@@ -149,6 +155,8 @@ def send_emailjs(template_params: dict) -> dict:
     if private_key:
         payload["accessToken"] = private_key
 
+    logger.info("Sending EmailJS request")
+
     data = json.dumps(payload).encode("utf-8")
     req = urlrequest.Request(
         "https://api.emailjs.com/api/v1.0/email/send",
@@ -160,13 +168,18 @@ def send_emailjs(template_params: dict) -> dict:
     try:
         with urlrequest.urlopen(req, timeout=12) as response:
             body = response.read().decode("utf-8", errors="replace")
+            logger.info("EmailJS SUCCESS status=%s body=%s", response.status, body)
             return {"sent": 200 <= response.status < 300, "status": response.status, "body": body}
+
     except error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        logger.error("EmailJS HTTP ERROR status=%s body=%s", exc.code, body)
         return {
             "sent": False,
             "status": exc.code,
-            "body": exc.read().decode("utf-8", errors="replace"),
+            "body": body,
         }
+
     except Exception as exc:
         logger.exception("EmailJS request failed")
         return {"sent": False, "reason": str(exc)}

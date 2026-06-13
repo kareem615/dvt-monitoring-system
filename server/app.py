@@ -153,7 +153,7 @@ def send_emailjs(template_params: dict) -> dict:
 
     private_key = os.environ.get("EMAILJS_PRIVATE_KEY")
     if private_key:
-        payload["accessToken"] = private_key
+        payload["private_key"] = private_key
 
     logger.info("Sending EmailJS request")
 

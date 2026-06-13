@@ -5,6 +5,7 @@ import os
 import secrets
 import string
 import threading
+import urllib.parse
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -158,6 +159,32 @@ def send_gmail(to_email, subject, body):
 
     except Exception as e:
         logger.exception("GMAIL SEND FAILED")
+
+        return {
+            "sent": False,
+            "reason": str(e)
+        }
+
+def send_telegram(message):
+    try:
+        token = os.environ["TELEGRAM_BOT_TOKEN"]
+        chat_id = os.environ["TELEGRAM_CHAT_ID"]
+
+        url = (
+            f"https://api.telegram.org/bot{token}/sendMessage"
+            f"?chat_id={chat_id}"
+            f"&text={urllib.parse.quote(message)}"
+        )
+
+        with urlrequest.urlopen(url, timeout=10) as response:
+            response.read()
+
+        logger.info("TELEGRAM MESSAGE SENT")
+
+        return {"sent": True}
+
+    except Exception as e:
+        logger.exception("TELEGRAM SEND FAILED")
 
         return {
             "sent": False,
@@ -431,11 +458,7 @@ The DVT condition persisted for more than {timer} seconds.
 Immediate medical review is recommended.
 """
 
-        result = send_gmail(
-            doctor.get("email"),
-            "DVT Risk Alert",
-            body
-        )
+        result = send_telegram(body)
         results.append({"doctorEmail": doctor.get("email"), **result})
 
     write_notification(
